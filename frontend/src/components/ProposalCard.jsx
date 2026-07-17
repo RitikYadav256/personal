@@ -16,8 +16,8 @@ export default function ProposalCard({
   return (
     <motion.div
       className="proposal-card"
-      initial={{ opacity: 0, y: 24, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      initial={{ opacity: 0, y: 28, scale: 0.96 }}
+      animate={{ opacity: 1, y: 15, scale: 1 }}
       transition={{ duration: 0.65, ease: 'easeOut' }}
     >
       {!showProposal ? (
@@ -48,7 +48,7 @@ export default function ProposalCard({
               className="btn btn--yes"
               onClick={onYes}
             >
-              <FiHeart /> YES
+              <FiHeart /> YES SIR
             </motion.button>
 
             <motion.button

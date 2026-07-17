@@ -12,7 +12,7 @@ export default function SuccessScreen() {
       <div className="success-screen__glow" />
       <FiHeart className="success-screen__heart" />
       <h2>You made my heart feel safe and full of light 💗</h2>
-      <p>My favorite dream just became real, and it feels like coming home.</p>
+      <p>My favorite dream just became real and healthy, and it feels like coming home.</p>
       <div className="success-screen__badges">
         <span><FiStar /> Pure joy</span>
         <span><FiStar /> Endless love</span>
