@@ -34,7 +34,9 @@ function App() {
         return;
       }
 
-      const { clientX, clientY } = event;
+      const touch = event.touches?.[0];
+      const clientX = touch?.clientX ?? event.clientX ?? 0;
+      const clientY = touch?.clientY ?? event.clientY ?? 0;
       const distance = Math.min(window.innerWidth, window.innerHeight) * 0.16;
       const rect = document.querySelector('.btn--no')?.getBoundingClientRect();
       if (!rect) {
@@ -49,12 +51,18 @@ function App() {
     };
 
     window.addEventListener('mousemove', handleMove);
-    return () => window.removeEventListener('mousemove', handleMove);
+    window.addEventListener('touchmove', handleMove, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('touchmove', handleMove);
+    };
   }, [proposed, celebrating]);
 
   const moveNoButton = () => {
-    const viewportWidth = window.innerWidth - 180;
-    const viewportHeight = window.innerHeight - 180;
+    const horizontalPadding = window.innerWidth < 700 ? 92 : 180;
+    const verticalPadding = window.innerHeight < 700 ? 120 : 180;
+    const viewportWidth = Math.max(window.innerWidth - horizontalPadding, 0);
+    const viewportHeight = Math.max(window.innerHeight - verticalPadding, 0);
     const randomLeft = Math.random() * viewportWidth;
     const randomTop = Math.random() * viewportHeight;
 

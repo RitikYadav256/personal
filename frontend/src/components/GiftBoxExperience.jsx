@@ -90,8 +90,10 @@ export default function GiftBoxExperience({ onYes, onNo, noMessage, noButtonStyl
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [openingGift, setOpeningGift] = useState(false);
   const [specialReveal, setSpecialReveal] = useState(false);
+  const [congratsVisible, setCongratsVisible] = useState(false);
   const revealTimerRef = useRef(null);
   const dismissTimerRef = useRef(null);
+  const congratsTimerRef = useRef(null);
 
   useEffect(() => {
     const specialIndex = Math.floor(Math.random() * baseGifts.length);
@@ -113,6 +115,9 @@ export default function GiftBoxExperience({ onYes, onNo, noMessage, noButtonStyl
       }
       if (dismissTimerRef.current) {
         window.clearTimeout(dismissTimerRef.current);
+      }
+      if (congratsTimerRef.current) {
+        window.clearTimeout(congratsTimerRef.current);
       }
     };
   }, []);
@@ -184,6 +189,24 @@ export default function GiftBoxExperience({ onYes, onNo, noMessage, noButtonStyl
     handleOpen(gifts[randomIndex], randomIndex);
   };
 
+  const handleProposalYes = () => {
+    try {
+      if (onYes) onYes();
+    } catch (e) {
+      // swallow to avoid breaking UI
+    }
+
+    // hide special reveal and show congrats modal
+    setSpecialReveal(false);
+    setCardVisible(false);
+    setCongratsVisible(true);
+
+    if (congratsTimerRef.current) window.clearTimeout(congratsTimerRef.current);
+    congratsTimerRef.current = window.setTimeout(() => {
+      setCongratsVisible(false);
+    }, 5000);
+  };
+
   const currentProgress = openedCards.length;
 
   return (
@@ -204,6 +227,7 @@ export default function GiftBoxExperience({ onYes, onNo, noMessage, noButtonStyl
             <motion.button
               key={gift.title}
               type="button"
+              layoutId={`gift-${index}`}
               className={`gift-box ${gift.theme} ${isOpen ? 'gift-box--open' : ''} ${gift.special ? 'gift-box--special' : ''} ${isActive ? 'gift-box--active' : ''} ${isSelected ? 'gift-box--selected' : ''}`}
               onClick={() => handleOpen(gift, index)}
               whileHover={{ y: -8, scale: 1.02 }}
@@ -253,46 +277,49 @@ export default function GiftBoxExperience({ onYes, onNo, noMessage, noButtonStyl
         ) : null}
       </AnimatePresence>
 
-      <div className="gift-reveal-shell">
-        <AnimatePresence mode="wait">
-          {cardVisible && activeGift && !specialReveal ? (
-            <motion.div
-              key={activeGift.title}
-              className="gift-message"
-              initial={{ opacity: 0, scale: 0.92, y: 18 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 12 }}
-              transition={{ duration: 0.45 }}
-            >
+      <AnimatePresence>
+        {cardVisible && activeGift && !specialReveal ? (
+          <motion.div
+            key={activeGift.title}
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
               <motion.div
-                className="greeting-card"
-                initial={{ y: 20, rotate: -3, opacity: 0.7 }}
-                animate={{ y: 0, rotate: 0, opacity: 1 }}
-                transition={{ duration: 0.55 }}
+                className="modal opened-card"
+                layoutId={`gift-${selectedIndex}`}
+                initial={{ opacity: 0, scale: 0.8, rotateX: 10 }}
+                animate={{ opacity: 1, scale: 1, rotateX: 0 }}
+                exit={{ opacity: 0, scale: 0.8, rotateX: 10 }}
+                transition={{ type: 'spring', stiffness: 240, damping: 28 }}
+                role="dialog"
+                aria-modal="true"
               >
-                <motion.div
-                  className="greeting-card__inside"
-                  animate={{ rotateY: cardOpen ? 180 : 0 }}
-                  transition={{ duration: 1.8, ease: 'easeInOut' }}
-                  onAnimationComplete={() => setCardOpen(true)}
-                >
-                  <div className="greeting-card__page greeting-card__page--left">
-                    <div className="greeting-card__heart" />
-                    <p>With love</p>
-                  </div>
-                  <div className="greeting-card__page greeting-card__page--right">
-                    <p>{activeGift.message}</p>
-                    <p className="greeting-card__hindi">{activeGift.messageHindi}</p>
-                    <button type="button" className="greeting-card__close" onClick={handleCloseCard}>
-                      <FiArrowLeft /> Back to gifts
-                    </button>
-                  </div>
+                <button className="modal__close" onClick={handleCloseCard} aria-label="Close">×</button>
+                <div className="opened-card__decor">✨ <span className="opened-card__heart">❤️</span> ✨</div>
+                <h3 className="opened-card__eyebrow">FOR SOMEONE SPECIAL</h3>
+                <motion.div className="opened-card__message" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.28, duration: 0.55 }}>
+                  {activeGift.message.split('\n').map((line, i) => (<p key={i}>{line}</p>))}
                 </motion.div>
+                <motion.div className="opened-card__signature" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.5 }}>— With Love</motion.div>
               </motion.div>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
-      </div>
+              <div className="overlay-effects" aria-hidden="true">
+                <div className="floating-hearts">
+                  <span>💗</span>
+                  <span>💖</span>
+                  <span>💘</span>
+                  <span>✨</span>
+                </div>
+                <div className="soft-particles" />
+                <div className="falling-petals">
+                  {Array.from({ length: 10 }).map((_, i) => (<span key={i} />))}
+                </div>
+              </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
 
       <AnimatePresence>
         {specialReveal && activeGift ? (
@@ -313,25 +340,20 @@ export default function GiftBoxExperience({ onYes, onNo, noMessage, noButtonStyl
             </div>
             <motion.div
               className="special-gift-scene__content"
-              initial={{ opacity: 0, y: 22 }}
+              initial={{ opacity: 5, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
             >
               <p className="special-gift-scene__eyebrow">A secret world inside the gift</p>
               <motion.h3 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }}>
-                एक आख़िरी बात...
+                One thing I wanted to ask you all along...
               </motion.h3>
-              <motion.p className="special-gift-scene__line" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}>
-                इन सभी छोटे-छोटे तोहफों में मैंने अपनी भावनाओं का एक हिस्सा छुपाया था...
-              </motion.p>
-              <motion.p className="special-gift-scene__line" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}>
-                लेकिन एक बात अभी भी बाकी है...
-              </motion.p>
+
               <motion.h2 initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 2.0 }}>
-                ❤️ क्या तुम मुझे पसंद करती हो? ❤️
+                ❤️ Do you like me? ❤️
               </motion.h2>
               <div className="gift-proposal__actions">
-                <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="btn btn--yes" onClick={onYes}>
+                <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="btn btn--yes" onClick={handleProposalYes}>
                   <FiHeart /> YES
                 </motion.button>
                 <motion.button
@@ -349,6 +371,33 @@ export default function GiftBoxExperience({ onYes, onNo, noMessage, noButtonStyl
                 </motion.button>
               </div>
               <p className="tease-message">{noMessage}</p>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {congratsVisible ? (
+          <motion.div
+            key="congrats"
+            className="modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <motion.div
+              className="modal"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.35 }}
+              role="dialog"
+              aria-modal="true"
+            >
+              <button className="modal__close" onClick={() => setCongratsVisible(false)} aria-label="Close">×</button>
+              <h2 style={{ marginTop: 4 }}>Congratulations!</h2>
+              <p style={{ margin: '8px 0 0' }}>They said yes — celebrate this moment ❤️</p>
             </motion.div>
           </motion.div>
         ) : null}
