@@ -719,7 +719,7 @@ body.theme-light .btn {
   min-height: 80vh;
   max-width: 960px;
   text-align: center;
-  color: #fff;
+  color: #000000;
   background: rgba(255, 247, 250, 0.16);
   border: 1px solid rgba(255,255,255,0.22);
   backdrop-filter: blur(14px);
@@ -738,7 +738,7 @@ body.theme-light .btn {
   letter-spacing: 0.3em;
   font-size: 0.78rem;
   margin-bottom: 0.7rem;
-  color: rgba(255,255,255,0.8);
+  color: #000000;
 }
 
 .special-gift-scene__line {

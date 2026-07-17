@@ -188,14 +188,6 @@ export default function GiftBoxExperience({ onYes, onNo, noMessage, noButtonStyl
 
   return (
     <div className="gift-experience">
-      <div className="gift-experience__header">
-        <p className="gift-experience__eyebrow">Six secret gifts</p>
-        <h2>Six little surprises</h2>
-        <p className="gift-experience__subtitle">Open one and see what waits inside.</p>
-      </div>
-
-      <div className="gift-experience__progress">Gift {Math.min(currentProgress, gifts.length)} of {gifts.length} opened</div>
-
       <div className="gift-experience__actions">
         <button type="button" className="gift-random-btn" onClick={handleRandomPick}>
           Pick a random card
