@@ -187,7 +187,7 @@ export default function GiftBoxExperience({ onYes, onNo, noMessage, noButtonStyl
   const currentProgress = openedCards.length;
 
   return (
-    <div className="gift-experience">
+    <div className="gift-experience">git status
       <div className="gift-experience__actions">
         <button type="button" className="gift-random-btn" onClick={handleRandomPick}>
           Pick a random card
@@ -313,22 +313,17 @@ export default function GiftBoxExperience({ onYes, onNo, noMessage, noButtonStyl
             </div>
             <motion.div
               className="special-gift-scene__content"
-              initial={{ opacity: 0, y: 22 }}
+              initial={{ opacity: 5, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
             >
               <p className="special-gift-scene__eyebrow">A secret world inside the gift</p>
               <motion.h3 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }}>
-                एक आख़िरी बात...
+                One thing I wanted to ask you all along...
               </motion.h3>
-              <motion.p className="special-gift-scene__line" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}>
-                इन सभी छोटे-छोटे तोहफों में मैंने अपनी भावनाओं का एक हिस्सा छुपाया था...
-              </motion.p>
-              <motion.p className="special-gift-scene__line" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}>
-                लेकिन एक बात अभी भी बाकी है...
-              </motion.p>
+
               <motion.h2 initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 2.0 }}>
-                ❤️ क्या तुम मुझे पसंद करती हो? ❤️
+                ❤️ Do you like me? ❤️
               </motion.h2>
               <div className="gift-proposal__actions">
                 <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="btn btn--yes" onClick={onYes}>
